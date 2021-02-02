@@ -46,3 +46,4 @@ _ReSharper*/
 # Office Temp Files
 ~$*
 
+nodemon.json
