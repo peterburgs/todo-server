@@ -1,9 +1,19 @@
+// Import Models
+require("./models/user");
+require("./models/task");
+
 // Import libraries & packages
 const express = require("express");
 const morgan = require("morgan");
 const bodyParser = require("body-parser");
 const mongoose = require("mongoose");
 const app = express();
+
+// Import Routes
+const userRoutes = require("./routes/userRoutes");
+const taskRoutes = require("./routes/taskRoutes");
+// Middlewares
+const requireAuth = require("./middlewares/requireAuth");
 
 // Connect to MongoDB
 mongoose.connect(
@@ -22,8 +32,6 @@ mongoose.connection.on("connected", () => {
 mongoose.connection.on("error", () => {
   console.log("*LOG: Fail to connect to MongoDB!");
 });
-
-// Import Routers
 
 // Define app
 app.use(morgan("dev"));
@@ -49,8 +57,12 @@ app.use((req, res, next) => {
   }
   next();
 });
+
+// Use Routes
+app.use("/", userRoutes);
+app.use("/tasks", taskRoutes);
 // GET
-app.get("/", (req, res) => {
+app.get("/", requireAuth, (req, res) => {
   res.status(200).json({
     message: `Welcome ${req.user.email}`,
   });
